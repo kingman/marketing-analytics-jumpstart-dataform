@@ -83,7 +83,6 @@ config {
   
 post_operations {
   ${when(! incremental(), `ALTER TABLE ${self()} ADD PRIMARY KEY (event_id) NOT ENFORCED;` )}
-  ALTER TABLE ${self()} ADD CONSTRAINT IF NOT EXISTS 
-    fk_event_traffic_source FOREIGN KEY (traffic_source_id) 
-    REFERENCES ${ref(functions.baseSchema("ga4"),"traffic_source")}(traffic_source_id) NOT ENFORCED
+  ALTER TABLE ${self()}
+${sql.foreignKeyConstraints("fk_event_", ga4.eventTableForeignKeys, ref)}
 }

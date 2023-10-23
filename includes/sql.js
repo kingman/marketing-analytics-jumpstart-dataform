@@ -69,4 +69,20 @@ function aggregatedVBBColumns(eventDateField, eventDateAlias, columns) {
     }
     return result;
 }
-module.exports = {multiColumnEqualsClause, parseIsoWeekYear, isoYearWeekColumn, percentChangeColumn, dashboardWebBrowsers, webBrowserCaseStatement, aggregatedVBBColumns};
+
+function foreignKeyConstraints(constraintPrefix, columns, ref) {
+    let result = "";
+    for(const foreignKeyTable in columns) {
+        if(result.length > 0) {
+            result = result + ',\n';
+        }
+        result = result + `  ADD CONSTRAINT IF NOT EXISTS ${constraintPrefix}${foreignKeyTable} FOREIGN KEY (${columns[foreignKeyTable]})\n`;
+        result = result + `    REFERENCES ${ref(functions.baseSchema("ga4"), foreignKeyTable)}(${columns[foreignKeyTable]}) NOT ENFORCED`;
+    }
+    result = result + ";"
+    return result;
+}
+
+module.exports = {multiColumnEqualsClause, parseIsoWeekYear, 
+isoYearWeekColumn, percentChangeColumn, dashboardWebBrowsers, 
+webBrowserCaseStatement, aggregatedVBBColumns, foreignKeyConstraints};

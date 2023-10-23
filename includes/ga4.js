@@ -97,6 +97,14 @@ const aggregatedVBBColumns = {
     "purchase": "Purchase_Product"
 };
 
+const eventTableForeignKeys = {
+    "traffic_source": "traffic_source_id",
+    // "device_type": "device_type_id",
+    // "browser": "browser_id",
+    // "location": "location_id",
+    // "normalized_device_type": "normalized_device_type_id"
+};
+
 const eventTypeTagged = "tagged";
 
 const eventTypePredicted = "predictive";
@@ -107,5 +115,5 @@ module.exports = {incrementalSuffixStart, incrementalSuffixEnd,
 deviceUniqueColumns, normalizedDeviceUniqueColumns,
 eventUniqueColumns, locationUniqueColumns, trafficSourceUniqueColumns,
 browserUniqueColumns, eventTypeTagged, eventTypePredicted, eventTypeCustom,
-aggregatedVBBColumns};
+aggregatedVBBColumns, eventTableForeignKeys};
 
