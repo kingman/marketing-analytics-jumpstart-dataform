@@ -62,12 +62,25 @@ function percentChangeColumn(metric, granularity){
     return result;
 }
 
-function aggregatedVBBColumns(eventDateField, eventDateAlias, columns) {
-    let result = `${eventDateField} as ${eventDateAlias}`;
+function aggregatedVBBColumns(eventDateField, eventDateAlias, eventNameField, columns) {
+    let result = `${eventDateField} AS ${eventDateAlias}`;
     for(const event_type in columns) {
-        result = result + `,\n  COUNTIF(event_name = "${event_type}") OVER(PARTITION BY ${eventDateField}) as ${columns[event_type]}`;
+        result = result + `,\n  COUNTIF(${eventNameField} = "${event_type}") AS ${columns[event_type]}`;
     }
     return result;
+}
+
+function selectFieldsFromRepeatedRecord(fieldName, columns) {
+    let result = "";
+    const tmpAlias = `${fieldName}ta`;
+    const doubleSpace = "  "
+    columns.forEach(column => {
+        if(result.length > 0) {
+            result = result + ',\n';
+        }
+        result = result + `${doubleSpace}${doubleSpace}${tmpAlias}.${column} AS ${column}`;
+    })
+    return 'ARRAY( SELECT STRUCT (\n' + result + `\n${doubleSpace}) FROM UNNEST(${fieldName}) AS ${tmpAlias} ) AS ${fieldName}`;
 }
 
 function foreignKeyConstraints(constraintPrefix, columns, ref) {
@@ -83,6 +96,7 @@ function foreignKeyConstraints(constraintPrefix, columns, ref) {
     return result;
 }
 
-module.exports = {multiColumnEqualsClause, parseIsoWeekYear, 
-isoYearWeekColumn, percentChangeColumn, dashboardWebBrowsers, 
-webBrowserCaseStatement, aggregatedVBBColumns, foreignKeyConstraints};
+module.exports = {multiColumnEqualsClause, parseIsoWeekYear,
+isoYearWeekColumn, percentChangeColumn, dashboardWebBrowsers,
+webBrowserCaseStatement, aggregatedVBBColumns, selectFieldsFromRepeatedRecord,
+foreignKeyConstraints};
